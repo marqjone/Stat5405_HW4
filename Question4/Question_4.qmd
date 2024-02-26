@@ -1,0 +1,53 @@
+---
+title: "HW4 - Question 4"
+author: "Marquette Jones"
+date: ""
+format:
+  pdf:
+    embed-resources: true
+    theme: cosmo
+    code-line-numbers: true
+    number_examples: true
+    number_sections: true
+    number_chapters: true
+    linkcolor: blue
+editor: visual
+fig-cap-location: top
+---
+
+Does NFL Conference help explain yards per game gained by teams?  Data retrieved from: https://www.espn.com/nfl/stats/team
+
+
+```{r}
+library(readxl)
+nfl_xl <- read_excel("C:\\Users\\Mark\\Desktop\\Stats_Homework\\Homework4\\NFL_Stats.xlsx")
+nfl_xl$CONF <- as.factor(nfl_xl$CONF)
+nfl_xl
+```
+```{r}
+library(ggplot2)
+ggplot(nfl_xl, aes(x = CONF, y = YPG_AVG)) + geom_boxplot()
+
+```
+```{r}
+library(car)
+nfl_model <- aov(YPG_AVG ~ CONF, data = nfl_xl)
+summary(lm(nfl_model))
+
+nfl_fits <- fitted(nfl_model)
+nfl_res <- residuals(nfl_model)
+
+shapiro.test(nfl_res)
+leveneTest(YPG_AVG ~ CONF, data = nfl_xl)
+qf(0.95, 1, 30)
+```
+Comment:  
+
+Normality:  The large p-value from the Shapiro test validates normality. 
+
+
+Equal Variance: The large p-value supports the assumption of equal variances.
+
+
+The p-value is higher than the critical value, so we cannot reject the null hypothesis, so we assume that the NFL conference you are in does not have a significant effect on the YPG averaged of a team. Also, the F-observed value is less than the critical F-value, which also suggests that there is no significant difference in sample averages.
+
